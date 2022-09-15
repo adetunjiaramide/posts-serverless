@@ -1,0 +1,40 @@
+service: posts-data
+frameworkVersion: "3"
+provider:
+  name: aws
+  runtime: nodejs16.x
+  profile: tunji-profile
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+          Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:023939965339:table/${self:custom.DynamoDBName}"
+custom:
+  DynamoDBName: ${self:service}.posts_db.${self:provider.stage}
+functions:
+  createPostFunction:
+    handler: createPost.createPost
+    environment:
+      AppTableName: ${self:custom.DynamoDBName}
+resources:
+  Resources:
+    myDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: post_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: post_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.DynamoDBName}
