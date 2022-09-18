@@ -4,28 +4,31 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 
 
 module.exports.createPost = async(event) => {
-    
+
+    console.log('event', event);
     const client = new DynamoDBClient();
+    let parseData = JSON.parse(event.body);
+    let response = {}
     const params = {
         TableName: TABLENAME,
         Item: marshall({
-            post_id: event.post_id,
-            title: event.title
+            post_id: parseData.post_id,
+            title: parseData.title
         })
     }
 
     try {
         const data = await client.send(new PutItemCommand(params))
-        console.log(data)
-        return response = {
+        response = {
             statusCode: 200,
-            body: data
+            body: JSON.stringify(data)
         }
     } catch (err) {
         console.log(err)
-        return response = {
+        response = {
             statusCode: 400,
             body: err
         }
     }
+    return response;
 }

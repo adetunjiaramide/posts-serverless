@@ -23,6 +23,11 @@ custom:
 functions:
   createPostFunction:
     handler: createPost.createPost
+    events:
+      - httpApi:
+          method: POST
+          path: /posts
+          cors: true
     environment:
       AppTableName: ${self:custom.DynamoDBName}
 resources:
