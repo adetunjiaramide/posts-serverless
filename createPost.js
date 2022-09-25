@@ -1,6 +1,7 @@
 const  { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
 const TABLENAME = process.env.AppTableName;
 const { marshall } = require("@aws-sdk/util-dynamodb");
+const { v4: uuidv4 } = require('uuid');
 
 
 module.exports.createPost = async(event) => {
@@ -8,11 +9,11 @@ module.exports.createPost = async(event) => {
     console.log('event', event);
     const client = new DynamoDBClient();
     let parseData = JSON.parse(event.body);
-    let response = {}
+    let response = {} 
     const params = {
         TableName: TABLENAME,
         Item: marshall({
-            post_id: parseData.post_id,
+            post_id: uuidv4(),
             title: parseData.title
         })
     }

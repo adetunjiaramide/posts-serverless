@@ -3,7 +3,7 @@ frameworkVersion: "3"
 provider:
   name: aws
   runtime: nodejs16.x
-  profile: tunji-profile
+  profile: tunji_profile
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
   iam:
@@ -26,6 +26,15 @@ functions:
     events:
       - httpApi:
           method: POST
+          path: /posts
+          cors: true
+    environment:
+      AppTableName: ${self:custom.DynamoDBName}
+  getPostFunction:
+    handler: getPost.getPost
+    events:
+      - httpApi:
+          method: GET
           path: /posts
           cors: true
     environment:
